@@ -2,8 +2,10 @@ package br.com.curso.spring.controller;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,12 +24,15 @@ public class UserController {
 	@Autowired
 	UserService userService;
 	
-	@GetMapping
-	public String getUser(){
-		return "Retorno do método GET";
+	@GetMapping(path="/{publicId}", produces= {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+	public UserControllerResponse  getUser(@PathVariable String publicId){
+		UserEntity user = userService.findUserByPublicId(publicId);
+		
+		return new ModelMapper().map(user, UserControllerResponse.class);
 	}
 	
-	@PostMapping
+	@PostMapping(consumes= {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
+			, produces= {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
 	public UserControllerResponse createUser(@RequestBody UserControllerPostRequest userDetails){
 		ModelMapper mapper = new ModelMapper();
 		
