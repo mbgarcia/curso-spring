@@ -33,9 +33,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 	private final AuthenticationManager authenticationManager;
 
 	public AuthenticationFilter(AuthenticationManager authenticationManager) {
-
 		this.authenticationManager = authenticationManager;
-
 	}
 
 	@Override
@@ -45,28 +43,18 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 			HttpServletResponse res) throws AuthenticationException {
 
 		try {
-
 			UserLoginRequest creds = new ObjectMapper()
-
 					.readValue(req.getInputStream(), UserLoginRequest.class);
 
 			logger.info("Authentication with Email: {}", creds.getEmail());
 			return authenticationManager.authenticate(
-
 					new UsernamePasswordAuthenticationToken(
-
 							creds.getEmail(),
-
 							creds.getPassword(),
-
 							new ArrayList<>())
-
 			);
-
 		} catch (IOException e) {
-
 			throw new RuntimeException(e);
-
 		}
 
 	}
@@ -74,11 +62,8 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 	@Override
 
 	protected void successfulAuthentication(HttpServletRequest req,
-
 			HttpServletResponse res,
-
 			FilterChain chain,
-
 			Authentication auth) throws IOException, ServletException {
 
 		String userName = ((User) auth.getPrincipal()).getUsername();
@@ -86,17 +71,14 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 		logger.info("AUTHENTICATED USER: {} ", userName);
 
 		String token = Jwts.builder()
-
 				.setSubject(userName)
-
 				.setExpiration(new Date(System.currentTimeMillis() + SecurityConstants.EXPIRATION_TIME))
-
 				.signWith(SignatureAlgorithm.HS512, SecurityConstants.getTokenSecret())
-
 				.compact();
 
 		UserService userService = (UserService) SpringApplicationContext.getBean("userService");
 
 		res.addHeader(SecurityConstants.HEADER_STRING, SecurityConstants.TOKEN_PREFIX + token);
+		res.addHeader("USERID", userService.findUserByEmail(userName).getUserId());
 	}
 }
