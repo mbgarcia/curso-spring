@@ -1,5 +1,7 @@
 package br.com.curso.spring.request;
 
+import java.util.List;
+
 public class UserControllerPostRequest {
 	private String firstName;
 	
@@ -8,6 +10,8 @@ public class UserControllerPostRequest {
 	private String email;
 	
 	private String password;
+	
+	private List<AddressData> addresses;
 
 	public String getFirstName() {
 		return firstName;
@@ -39,5 +43,13 @@ public class UserControllerPostRequest {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public List<AddressData> getAddresses() {
+		return addresses;
+	}
+
+	public void setAddresses(List<AddressData> addresses) {
+		this.addresses = addresses;
 	}
 }

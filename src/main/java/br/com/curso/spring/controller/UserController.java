@@ -17,10 +17,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.curso.spring.model.AddressEntity;
 import br.com.curso.spring.model.UserEntity;
+import br.com.curso.spring.request.AddressData;
 import br.com.curso.spring.request.UserControllerPostRequest;
 import br.com.curso.spring.request.UserControllerPutRequest;
 import br.com.curso.spring.response.UserControllerResponse;
+import br.com.curso.spring.service.AddressService;
 import br.com.curso.spring.service.UserService;
 
 @RestController
@@ -29,6 +32,9 @@ public class UserController {
 	
 	@Autowired
 	UserService userService;
+	
+	@Autowired
+	AddressService addressService;
 	
 	@GetMapping(path="/{publicId}", produces= {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
 	public UserControllerResponse  getUser(@PathVariable String publicId){
@@ -67,5 +73,14 @@ public class UserController {
 	@DeleteMapping(path="/{publicId}")
 	public void deleteUser(@PathVariable String publicId){
 		userService.deleteUser(publicId);;
+	}
+	
+	@GetMapping(path="/{publicId}/addresses", produces= {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+	public List<AddressData> getUserAddresses(@PathVariable String publicId){
+		List<AddressEntity> list = addressService.listUserAddresses(publicId);
+		
+		Type listType = new TypeToken<List<AddressData>>() {}.getType();
+		
+		return new ModelMapper().map(list, listType);		
 	}
 }

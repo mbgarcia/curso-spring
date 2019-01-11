@@ -1,5 +1,9 @@
 package br.com.curso.spring.response;
 
+import java.util.List;
+
+import br.com.curso.spring.request.AddressData;
+
 public class UserControllerResponse {
 	private String userId;
 	
@@ -8,6 +12,8 @@ public class UserControllerResponse {
 	private String lastName;
 	
 	private String email;
+	
+	private List<AddressData> addresses;
 
 	public String getUserId() {
 		return userId;
@@ -39,5 +45,13 @@ public class UserControllerResponse {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public List<AddressData> getAddresses() {
+		return addresses;
+	}
+
+	public void setAddresses(List<AddressData> addresses) {
+		this.addresses = addresses;
 	}
 }

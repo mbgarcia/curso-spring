@@ -38,6 +38,8 @@ public class UserService implements UserDetailsService{
 		
 		user.setUserId(utils.generateUserId(30));
 		user.setEncryptedPassword(passwordEncoder.encode(user.getPassword()));
+		user.getAddresses().stream().forEach(address -> address.setUser(user));
+		
 		UserEntity storedUser = repository.save(user);
 		
 		return storedUser;
