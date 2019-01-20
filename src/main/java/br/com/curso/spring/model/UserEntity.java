@@ -1,6 +1,7 @@
 package br.com.curso.spring.model;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -9,9 +10,11 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.persistence.Transient;
 
-@Entity(name="users")
+@Entity
+@Table(name="users")
 public class UserEntity {
 	
 	@Id
@@ -49,7 +52,7 @@ public class UserEntity {
 	private LocalDateTime deletedAt;
 	
 	@OneToMany(mappedBy="user", cascade=CascadeType.ALL)
-	private List<AddressEntity> addresses;
+	private List<AddressEntity> addresses = new ArrayList<>();
 
 	public Long getId() {
 		return id;
