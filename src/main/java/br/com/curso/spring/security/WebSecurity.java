@@ -22,12 +22,17 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.csrf().disable().authorizeRequests().antMatchers(HttpMethod.POST, "/users").permitAll().anyRequest()
-				.authenticated()
-				.and().addFilter(getAuthenticationFilter())
-				.addFilter(new AuthorizationFilter(authenticationManager()))
-				.sessionManagement()
-				.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+		http.csrf().disable().authorizeRequests()
+			.antMatchers(HttpMethod.POST, "/users")
+			.permitAll()
+			.antMatchers("/v2/api-docs", "/configuration/**", "/swagger*/**", "/webjars/**")
+			.permitAll()
+			.anyRequest()
+			.authenticated()
+			.and().addFilter(getAuthenticationFilter())
+			.addFilter(new AuthorizationFilter(authenticationManager()))
+			.sessionManagement()
+			.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 	}
 
 	@Override
