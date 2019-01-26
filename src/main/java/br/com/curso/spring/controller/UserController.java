@@ -25,6 +25,8 @@ import br.com.curso.spring.request.UserControllerPutRequest;
 import br.com.curso.spring.response.UserControllerResponse;
 import br.com.curso.spring.service.AddressService;
 import br.com.curso.spring.service.UserService;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 
 @RestController
 @RequestMapping("/users")
@@ -43,6 +45,9 @@ public class UserController {
 		return new ModelMapper().map(user, UserControllerResponse.class);
 	}
 	
+	@ApiImplicitParams({
+		@ApiImplicitParam(name="Authorization", value="Bearer JWT Token", paramType="header")
+	})
 	@GetMapping(produces= {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
 	public List<UserControllerResponse> getUsers(@RequestParam(defaultValue="1") int page, @RequestParam(defaultValue="10") int limit){
 		List<UserEntity> users = userService.getUsers(page, limit);
