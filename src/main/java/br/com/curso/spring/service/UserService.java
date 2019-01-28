@@ -2,11 +2,13 @@ package br.com.curso.spring.service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -38,6 +40,7 @@ public class UserService implements UserDetailsService{
 		
 		user.setUserId(utils.generateUserId(30));
 		user.setEncryptedPassword(passwordEncoder.encode(user.getPassword()));
+		user.setEmailVerificationToken(utils.generateEmailToken(user.getEmail()));
 		user.getAddresses().stream().forEach(address -> address.setUser(user));
 		
 		UserEntity storedUser = repository.save(user);
@@ -76,7 +79,8 @@ public class UserService implements UserDetailsService{
 		
 		if (user == null) throw new UsernameNotFoundException(email);
 		
-		return new User(user.getEmail(), user.getEncryptedPassword(), new ArrayList<>());
+		return new User(user.getEmail(), user.getEncryptedPassword(), user.getEmailVerificationStatus(),
+				true, true, true, new ArrayList<>());
 	}
 
 	public UserEntity findUserByEmail(String email) {
