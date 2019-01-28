@@ -2,9 +2,12 @@ package br.com.curso.spring.response;
 
 import java.util.List;
 
+import org.springframework.hateoas.ResourceSupport;
+
 import br.com.curso.spring.request.AddressData;
 
-public class UserControllerResponse {
+public class UserControllerResponse extends ResourceSupport{
+	
 	private String userId;
 	
 	private String firstName;

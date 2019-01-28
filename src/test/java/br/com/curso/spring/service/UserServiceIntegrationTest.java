@@ -12,20 +12,26 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import br.com.curso.spring.model.UserEntity;
+import br.com.curso.spring.repository.UserRepository;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class UserServiceIntegrationTest {
 	
 	@Autowired
+	UserRepository repository;
+	
+	@Autowired
 	UserService service;
 	
 	@BeforeEach
 	public void setUp() {
+		repository.deleteAll();
+		
 		UserEntity user = new UserEntity();
-		user.setFirstName("Marcelo");
-		user.setLastName("Garcia");
-		user.setEmail("marcelo@mail.com");
+		user.setFirstName("Paulo");
+		user.setLastName("Paulada");
+		user.setEmail("paulinho@mail.com");
 		user.setPassword("123456");
 		
 		service.createUser(user);

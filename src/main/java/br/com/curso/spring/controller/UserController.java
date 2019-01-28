@@ -1,11 +1,17 @@
 package br.com.curso.spring.controller;
 
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+
 import java.lang.reflect.Type;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.Resources;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,11 +28,13 @@ import br.com.curso.spring.model.UserEntity;
 import br.com.curso.spring.request.AddressData;
 import br.com.curso.spring.request.UserControllerPostRequest;
 import br.com.curso.spring.request.UserControllerPutRequest;
+import br.com.curso.spring.response.EmailVerificationResponse;
 import br.com.curso.spring.response.UserControllerResponse;
 import br.com.curso.spring.service.AddressService;
 import br.com.curso.spring.service.UserService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
+
 
 @RestController
 @RequestMapping("/users")
@@ -38,11 +46,19 @@ public class UserController {
 	@Autowired
 	AddressService addressService;
 	
-	@GetMapping(path="/{publicId}", produces= {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
-	public UserControllerResponse  getUser(@PathVariable String publicId){
+	@GetMapping(path="/{publicId}", produces= {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE, "application/hal+json"})
+	public Resource<UserControllerResponse>  getUser(@PathVariable String publicId){
 		UserEntity user = userService.findUserByPublicId(publicId);
 		
-		return new ModelMapper().map(user, UserControllerResponse.class);
+		UserControllerResponse response = new ModelMapper().map(user, UserControllerResponse.class);
+		
+		Link self = linkTo(UserControllerResponse.class).slash(publicId).withSelfRel();
+		
+		Link addresses = linkTo(methodOn(UserController.class).getUserAddresses(publicId)).withRel("addresses");
+		
+		response.add(self, addresses);
+		
+		return new Resource<>(response);
 	}
 	
 	@ApiImplicitParams({
@@ -80,12 +96,22 @@ public class UserController {
 		userService.deleteUser(publicId);;
 	}
 	
-	@GetMapping(path="/{publicId}/addresses", produces= {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
-	public List<AddressData> getUserAddresses(@PathVariable String publicId){
+	@GetMapping(path="/{publicId}/addresses", produces= {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE, "application/hal+json"})
+	public Resources<AddressData> getUserAddresses(@PathVariable String publicId){
 		List<AddressEntity> list = addressService.listUserAddresses(publicId);
 		
 		Type listType = new TypeToken<List<AddressData>>() {}.getType();
 		
-		return new ModelMapper().map(list, listType);		
+		List<AddressData> addresses = new ModelMapper().map(list, listType);
+		
+		return new Resources<>(addresses);
+	}
+	
+	@GetMapping(path="/email-verification", produces= {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+	public EmailVerificationResponse emailVerification(@RequestParam String token) {
+		EmailVerificationResponse response = new EmailVerificationResponse();
+		response.setVerified(userService.verifyEmailToken(token));
+		response.setToken(token);
+		return response;
 	}
 }

@@ -27,6 +27,7 @@ class AddressRepositoryTest {
 	
 	@BeforeEach
 	void setUp() throws Exception {
+		userRepository.deleteAll();
 		
 		UserEntity user = new UserEntity();
 		user.setFirstName("Marcelo");

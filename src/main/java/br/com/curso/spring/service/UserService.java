@@ -95,4 +95,24 @@ public class UserService implements UserDetailsService{
 		
 		return repository.findAll(pageable).getContent();
 	}
+
+	public Boolean verifyEmailToken(String token) {
+		boolean verified = false;
+		
+		UserEntity entity = repository.findByEmailVerificationToken(token);
+		
+		if (entity != null) {
+			boolean tokenExpired = Utils.hasTokenExpired(token);
+			
+			if (!tokenExpired) {
+				entity.setEmailVerificationToken("");
+				entity.setEmailVerificationStatus(true);
+				repository.save(entity);
+				
+				verified = true;
+			}
+		}
+		
+		return verified;
+	}
 }

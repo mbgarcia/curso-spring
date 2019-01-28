@@ -15,6 +15,8 @@ import br.com.curso.spring.model.UserEntity;
 public interface UserRepository extends PagingAndSortingRepository<UserEntity, Long>{
 	UserEntity findByUserId(String userId);
 	UserEntity findByEmail(String email);
+	UserEntity findByEmailVerificationToken(String token);
+
 	boolean existsByEmail(String email);
 	
 	@Query(value="SELECT * FROM users where first_name = :firstName"
@@ -25,4 +27,5 @@ public interface UserRepository extends PagingAndSortingRepository<UserEntity, L
 			, countQuery="SELECT count(*) FROM users where first_name = %:search%"			
 			, nativeQuery=true)
 	public Page<UserEntity> findSimilarUsersByFirstName(Pageable pageable, String search);
+	
 }

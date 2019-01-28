@@ -1,6 +1,8 @@
 package br.com.curso.spring.request;
 
-public class AddressData {
+import org.springframework.hateoas.ResourceSupport;
+
+public class AddressData extends ResourceSupport{
 	private String street;
 	
 	private String city;
