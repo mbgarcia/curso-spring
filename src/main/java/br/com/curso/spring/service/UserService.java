@@ -20,6 +20,7 @@ import br.com.curso.spring.exception.UserNotFoundException;
 import br.com.curso.spring.model.UserEntity;
 import br.com.curso.spring.repository.UserRepository;
 import br.com.curso.spring.request.UserControllerPutRequest;
+import br.com.curso.spring.shared.AmazonSESEmailSender;
 import br.com.curso.spring.shared.Utils;
 
 @Service
@@ -44,6 +45,8 @@ public class UserService implements UserDetailsService{
 		user.getAddresses().stream().forEach(address -> address.setUser(user));
 		
 		UserEntity storedUser = repository.save(user);
+		
+		new AmazonSESEmailSender().sendEmail(user);
 		
 		return storedUser;
 	}
