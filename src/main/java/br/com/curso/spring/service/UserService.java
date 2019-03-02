@@ -2,13 +2,11 @@ package br.com.curso.spring.service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -17,10 +15,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import br.com.curso.spring.exception.UserNotFoundException;
+import br.com.curso.spring.model.PasswordResetTokenEntity;
 import br.com.curso.spring.model.UserEntity;
+import br.com.curso.spring.repository.PasswordResetTokenRepository;
 import br.com.curso.spring.repository.UserRepository;
 import br.com.curso.spring.request.UserControllerPutRequest;
 import br.com.curso.spring.shared.AmazonSESEmailSender;
+import br.com.curso.spring.shared.AmazonSESResetPasswordSender;
 import br.com.curso.spring.shared.Utils;
 
 @Service
@@ -34,6 +35,9 @@ public class UserService implements UserDetailsService{
 	
 	@Autowired
 	BCryptPasswordEncoder passwordEncoder;
+	
+	@Autowired
+	PasswordResetTokenRepository passwordResetRepository;
 	
 	public UserEntity createUser(UserEntity user){
 		if (repository.existsByEmail(user.getEmail()))
@@ -121,5 +125,22 @@ public class UserService implements UserDetailsService{
 		}
 		
 		return verified;
+	}
+
+	public void resetPassword(String email) {
+		UserEntity user = repository.findByEmail(email);
+		
+		if (user == null) {
+			throw new UserNotFoundException(email);			
+		}
+		
+		String token = utils.generateEmailToken(email);
+		
+		PasswordResetTokenEntity tokenEntity = new PasswordResetTokenEntity();
+		tokenEntity.setToken(token);
+		tokenEntity.setUser(user);
+		passwordResetRepository.save(tokenEntity);
+		
+		new AmazonSESResetPasswordSender().sendEmail(user, token);
 	}
 }

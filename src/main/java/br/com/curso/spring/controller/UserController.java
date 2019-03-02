@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.curso.spring.model.AddressEntity;
 import br.com.curso.spring.model.UserEntity;
 import br.com.curso.spring.request.AddressData;
+import br.com.curso.spring.request.PasswordResetRequest;
 import br.com.curso.spring.request.UserControllerPostRequest;
 import br.com.curso.spring.request.UserControllerPutRequest;
 import br.com.curso.spring.response.EmailVerificationResponse;
@@ -121,4 +122,11 @@ public class UserController {
 		response.setToken(token);
 		return response;
 	}
+	
+	@PostMapping(path="/password-reset-request"
+			, consumes= {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
+			)
+	public void resetPassword(@RequestBody PasswordResetRequest request) {
+		userService.resetPassword(request.getEmail());
+	}	
 }
