@@ -7,5 +7,5 @@ import br.com.curso.spring.model.PasswordResetTokenEntity;
 
 @Repository
 public interface PasswordResetTokenRepository extends CrudRepository<PasswordResetTokenEntity, Long>{
-
+	PasswordResetTokenEntity findByToken(String token);
 }

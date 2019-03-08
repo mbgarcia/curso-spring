@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,6 +31,7 @@ import br.com.curso.spring.model.AddressEntity;
 import br.com.curso.spring.model.UserEntity;
 import br.com.curso.spring.request.AddressData;
 import br.com.curso.spring.request.PasswordResetRequest;
+import br.com.curso.spring.request.PasswordResetValidationRequest;
 import br.com.curso.spring.request.UserControllerPostRequest;
 import br.com.curso.spring.request.UserControllerPutRequest;
 import br.com.curso.spring.response.EmailVerificationResponse;
@@ -128,5 +130,12 @@ public class UserController {
 			)
 	public void resetPassword(@RequestBody PasswordResetRequest request) {
 		userService.resetPassword(request.getEmail());
-	}	
+	}
+	
+	@PostMapping(path="/password-reset-validation", consumes = {MediaType.APPLICATION_JSON_VALUE})
+	@CrossOrigin(origins="*", allowedHeaders= {"Content-Type"})
+	public void resetPasswordValidation(@RequestBody PasswordResetValidationRequest request) throws Exception{
+		logger.info("Validation of reset");
+		userService.confirmResetPassword(request.getToken(), request.getPassword());
+	}		
 }

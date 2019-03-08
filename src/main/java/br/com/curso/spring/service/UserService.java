@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import br.com.curso.spring.exception.TokenNotValidException;
 import br.com.curso.spring.exception.UserNotFoundException;
 import br.com.curso.spring.model.PasswordResetTokenEntity;
 import br.com.curso.spring.model.UserEntity;
@@ -142,5 +143,23 @@ public class UserService implements UserDetailsService{
 		passwordResetRepository.save(tokenEntity);
 		
 		new AmazonSESResetPasswordSender().sendEmail(user, token);
+	}
+	
+	public void confirmResetPassword(String token, String password) {
+		PasswordResetTokenEntity entity = passwordResetRepository.findByToken(token);
+		
+		boolean tokenExpired = Utils.hasTokenExpired(token);
+		
+		if (entity == null || tokenExpired) {
+			throw new TokenNotValidException(token);
+		} else { 
+			UserEntity user = entity.getUser();
+			
+			user.setEncryptedPassword(passwordEncoder.encode(password));
+			
+			repository.save(user);
+			
+			passwordResetRepository.delete(entity);
+		}
 	}
 }

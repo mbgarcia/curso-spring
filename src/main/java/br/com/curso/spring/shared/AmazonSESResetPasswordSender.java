@@ -26,13 +26,13 @@ public class AmazonSESResetPasswordSender {
 	final String HTMLBODY = "<h2> Confirmação de reset de senha. <h2>"
 			+ "<p> Olá $userName </p>"
 			+ "<p> Para completar o processo de reset de senha, clique no link:  </p>"
-			+ "<p><a href='http://localhost:8010/password-reset.html?token=$tokenValue'> Reset de senha </a></p>" 
+			+ "<p><a href='http://localhost:8010/reset-password?token=$tokenValue'> Reset de senha </a></p>" 
 			+ "<br/><br/>";
 
 	final String TEXTBODY = "Confirmação de reset de senha. "
 			+ "\n\nOlá $userName"
 			+ "\n\nPara completar o processo de reset de senha, copie o link e cole no navegador:"
-			+ "\n\nhttp://localhost:8010/password-reset.html?token=$tokenValue";
+			+ "\n\nhttp://localhost:8010/reset-password?token=$tokenValue";
 
 	public void sendEmail(UserEntity entity, String token) {
 		try {
